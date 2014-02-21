@@ -98,32 +98,19 @@ sub runAllMethods {
 	else                { @gwords = (1,2,3,4,5,6); }
 	
 	my %gvalues = ();
-	#print "Calc gc ...\n";
 	@{ $gvalues{'gc' } } =  gc( \$gseq, \$gwin );
-	#print "Calc at ...\n";
-	@{ $gvalues{'at' } } =  at( \$gseq, \$gwin );
-	#print "Calc gcs ...\n";
+#	@{ $gvalues{'at' } } =  at( \$gseq, \$gwin );
 	@{ $gvalues{'gcs'} } = gcs( \$gseq, \$gwin );
-	#print "Calc ats ...\n";
-	@{ $gvalues{'ats'} } = ats( \$gseq, \$gwin );
-	#print "Calc ket ...\n";
-	@{ $gvalues{'ket'} } = ket( \$gseq, \$gwin );
-	#print "Calc pur ...\n";
-	@{ $gvalues{'pur'} } = pur( \$gseq, \$gwin );
-	#print "Calc cpg ...\n";
+#	@{ $gvalues{'ats'} } = ats( \$gseq, \$gwin );
+#	@{ $gvalues{'ket'} } = ket( \$gseq, \$gwin );
+#	@{ $gvalues{'pur'} } = pur( \$gseq, \$gwin );
 	@{ $gvalues{'cpg'} } = cpg( \$gseq, \$gwin );
-	#print "Calc ce ...\n";
 	@{ $gvalues{'ce' } } =  ce( \$gseq, \$gwin );
-	#print "Calc cz ...\n";
 	@{ $gvalues{'cz' } } =  cz( \$gseq, \$gwin );
-	#print "Calc cwf ...\n";
 	@{ $gvalues{'cwf'} } = cwf( \$gseq, \$gwin );
 	foreach my $ws (@gwords) {
-	#	print "Calc ct$ws ...\n";
 		@{ $gvalues{"ct$ws" } } =  ct( \$gseq, \$gwin, \$ws );
-	#	print "Calc cl$ws ...\n";
 		@{ $gvalues{"cl$ws" } } =  cl( \$gseq, \$gwin, \$ws );
-	#	print "Calc cm$ws ...\n";
 		@{ $gvalues{"cm$ws" } } =  cm( \$gseq, \$gwin, \$ws );
 	}
 	return %gvalues;

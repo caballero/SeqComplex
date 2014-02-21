@@ -13,7 +13,7 @@ in a fasta file.
 
 =cut
 
-my @methods = qw/gc at gcs ats cpg cwf ce cz cm1 cm2 cm3 cm4 cm5 cm6 ct1 ct2 ct3 ct4 ct5 ct6 cl1 cl2 cl3 cl4 cl5 cl6/;
+my @methods = qw/gc gcs cpg cwf ce cz cm1 cm2 cm3 cm4 cm5 cm6 ct1 ct2 ct3 ct4 ct5 ct6 cl1 cl2 cl3 cl4 cl5 cl6/;
 
 # Load fasta file
 $ARGV[0] or die "Usage: profileComplexSeq.pl FASTA\n";
