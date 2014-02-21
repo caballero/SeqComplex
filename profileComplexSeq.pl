@@ -57,7 +57,10 @@ print "\nDone.\n";
 
 sub readFasta {
 	my $file = shift @_;
-	open F, "$file" or die "cannot open $file\n";
+  my $fh   = $file;
+  $fh = "gunzip  -c $file | " if ($file =~ m/.gz$/);
+  $fh = "bunzip2 -c $file | " if ($file =~ m/.bz2$/);
+	open F, "$fh" or die "cannot open $file\n";
 	my $id = '';
 	while (<F>) {
 		chomp;
