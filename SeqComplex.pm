@@ -493,9 +493,21 @@ sub cz {
 	for (my $p = 0; $p <= ($len - $$win); $p += $$win) {
 		my $str = substr ($$seq, $p, $$win);
 		my $r   = 0;
-		my $z   = Compress::Zlib::memGzip($str);
-		my $bz  = length $z;
-		$r      = $bz / $$win; 
+		my $tmp = 'temp' . int(rand 1e8);
+		open my $th, ">", $tmp or die "cannot create temp file\n";
+		print $th $str;
+		close $th;
+		my $size = -s $tmp;
+		system ("gzip $tmp");
+		$tmp .= ".gz";
+		if (-e $tmp and -s $tmp) {
+			my $cmpz = -s $tmp;
+			$r = $size / $compz;
+		}
+		else {
+			$r = 'NA';
+		}
+		unlink $tmp;
 		push @values, $r;
 	}
 	return @values;

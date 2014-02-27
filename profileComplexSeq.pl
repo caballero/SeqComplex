@@ -26,6 +26,8 @@ print "$tot sequences readed\n";
 
 # Create output file
 my $complex = $fasta;
+$complex =~ s/.gz$//;
+$complex =~ s/.bz2$//;
 $complex =~ s/fasta/complex/;
 open O, ">$complex" or die "cannot open $complex\n";
 
@@ -56,10 +58,10 @@ print "\nDone.\n";
 =cut
 
 sub readFasta {
-	my $file = shift @_;
-  my $fh   = $file;
-  $fh = "gunzip  -c $file | " if ($file =~ m/.gz$/);
-  $fh = "bunzip2 -c $file | " if ($file =~ m/.bz2$/);
+    my $file = shift @_;
+    my $fh   = $file;
+    $fh = "gunzip  -c $file | " if ($file =~ m/.gz$/);
+    $fh = "bunzip2 -c $file | " if ($file =~ m/.bz2$/);
 	open F, "$fh" or die "cannot open $file\n";
 	my $id = '';
 	while (<F>) {
