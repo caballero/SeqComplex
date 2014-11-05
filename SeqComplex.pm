@@ -502,7 +502,7 @@ sub cz {
 		$tmp .= ".gz";
 		if (-e $tmp and -s $tmp) {
 			my $cmpz = -s $tmp;
-			$r = $size / $compz;
+			$r = $size / $cmpz;
 		}
 		else {
 			$r = 'NA';
