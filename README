@@ -5,7 +5,11 @@ This is a collection of methods to compute the composition and complexity of a D
 The SeqComplex.pm is a Perl Module with all methods, 2 examples scripts are added:
 (1) compSeq.pl compute the methods in a windowed mode.
 (2) profileComplexSeq.pl compute the methods using the whole sequence.
+(3) gatherStats.pl: Example script to run all methods in windowed mode and save raw data
+                    for later processing.
+(4) displayStats.pl: Example script to read in raw data from gatherStats.pl and 
+                     display as either a table or a Google Charts HTML file.
 
-Copyright (C) 2009 by Juan Caballero [jcaballero@systemsbiology.org]
+Copyright (C) 2009-2015 by Juan Caballero [jcaballero@systemsbiology.org]
 
 All code is free software; you can redistribute it and/or modify it under the same terms as Perl itself, either Perl version 5.8.8 or, at your option, any later version of Perl 5 you may have available.
