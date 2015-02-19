@@ -183,7 +183,7 @@ sub runAllMethodsInline
       }
       for ( my $j = 1 ; $j <= $#sortedGWords ; $j++ )
       {
-        next if ( $sortedGWords[ $j ] > $rem );
+        next if ( $sortedGWords[ $j ] >= $rem );
         my $elem = substr( $tmpSeq, 0, $sortedGWords[ $j ] );
         next if ( $containsNonBase && $elem =~ /[^ACGT]/ );
         $words{ $sortedGWords[ $j ] }{$elem}++;
