@@ -8,7 +8,7 @@ SeqComplex
 
   # Example 1. Run all methods for each sequence
   use SeqComplex;
-  
+
   my @seq = loadSeqs($file);
   my $num = 0;
   foreach my $seq (@seq) {
@@ -19,16 +19,16 @@ SeqComplex
 		print "seq_$num\t$m\t$res\n";
 	}
   }
-  
-  ## Example 2. Run a particular method 
+
+  ## Example 2. Run a particular method
   ## NOTE: all methods require references as inputs and returns an ARRAY.
   use SeqComplex qw(:methods)
-  
+
   # Calculate the GC content every 1kb
   my $seq = 'ATGC' x 10000;
   my $win = 1000;
   my @gc_vals = gc(\$seq, \$win);
-  
+
 =head1 DESCRIPTION
 
 Calculate composition and complexity of a DNA sequence.
@@ -830,7 +830,7 @@ sub log_k
   my $res  = 0;
   if ( $num > 0 )
   {
-    $res = log $num / log $base;
+    $res = log($num) / log($base);
   } else
   {
     die "Cannot calculate log_k($base, $num)\n";
