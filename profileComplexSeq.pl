@@ -2,7 +2,7 @@
 use strict;
 use SeqComplex;
 
-=head1 NAME 
+=head1 NAME
 
 profileComplexSeq.pl FASTA
 
@@ -28,7 +28,10 @@ print "$tot sequences readed\n";
 my $complex = $fasta;
 $complex =~ s/.gz$//;
 $complex =~ s/.bz2$//;
-$complex =~ s/fasta/complex/;
+$complex =~ s/f[na].*$/complex/;
+
+# If input has unusual ext, ensure original file isn't overwritten
+$complex ne $fasta or $complex = $fasta . ".complex";
 open O, ">$complex" or die "cannot open $complex\n";
 
 # Print header
