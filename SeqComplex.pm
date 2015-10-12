@@ -621,7 +621,7 @@ sub cm
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, $$word );
     my $cm  = 0;
-    my $dw  = $$win - $$word - 1;
+    my $dw  = $$win - $$word + 1;
     foreach my $b ( keys %elm )
     {
       next unless ( $elm{$b} > 0 );
