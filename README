@@ -9,6 +9,23 @@ The SeqComplex.pm is a Perl Module with all methods, 2 examples scripts are adde
                     for later processing.
 (4) displayStats.pl: Example script to read in raw data from gatherStats.pl and 
                      display as either a table or a Google Charts HTML file.
+                     
+Computed methods
+  *gc: C+G content     
+  *gcs: C+G skew
+  *cpg: CpG skew
+  *cwf: Complexity by Wootton & Federhen
+  *ce: Entropy
+  *cz: Complexity as compression ratio (using Gzip)
+  *cmN: Complexity as Markov model size of N
+  *ctN: Trifnov's complexity with order N 
+  *clN: Linguistic complexity with order N
+
+Additonal methods
+  *ats: A+T skew
+  *ket: Keto skew
+  *pur: Purine skew
+
 
 Copyright (C) 2009-2015 by Juan Caballero [jcaballero@systemsbiology.org]
 
