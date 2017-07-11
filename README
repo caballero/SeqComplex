@@ -3,7 +3,7 @@
 This is a collection of methods to compute the composition and complexity of a DNA sequence(s) from a Fasta file.
 
 The SeqComplex.pm is a Perl Module containing implementations for each complexity 
-measure.  Additional several tools are provided which utilitize this module, they include:
+measure.  Additionally, several tools are provided which utilitize this module. They include:
 (1) compSeq.pl compute the methods in a windowed mode.
 (2) profileComplexSeq.pl compute the methods using the whole sequence.
 (3) gatherStats.pl: Example script to run all methods in windowed mode and save raw data
