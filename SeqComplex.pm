@@ -216,7 +216,7 @@ sub runAllMethodsInline
     push @{ $gvalues{'ats'} }, $val;
 
     # CPG
-    $cnt1 = $str =~ tr/CG/CG/;
+    $cnt1 = ($str =~ s/CG/CG/g);
     $cnt2 = $elm{'G'} * $elm{'C'};
     $val  = $cnt1 / $cnt2 if ( $cnt2 > 1 );
     push @{ $gvalues{'cpg'} }, $val;
@@ -237,7 +237,7 @@ sub runAllMethodsInline
     {
       next unless ( $elm{$b} > 0 );
       my $r = $elm{$b} / $totNuc if ( $totNuc > 1 );
-      $val -= $r * log_k( $k, $r );
+      $val -= $r * log_k( 2, $r );
     }
     push @{ $gvalues{"ce"} }, $val;
 
@@ -429,7 +429,7 @@ sub cpg
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $c = $str =~ tr/CG/CG/;
+    my $c = ($str =~ s/CG/CG/g);
     my $l = $elm{'G'} * $elm{'C'};
     my $r = 0;
     $r = $c / $l if ( $l > 1 );
@@ -565,9 +565,18 @@ sub cwf
 
 =head3 ce
 
-Function to calculate the Complexity Entropy values.
+Function to calculate the Complexity Entropy values aka
+Shannon entropy.
 
 Call: ce( \$seq, \$win ) STRING, NUMBER
+
+  H(X) = SUM( P(Xi) * Log2( P(Xi) ) )
+          i
+  
+  The unit of entropy for log2 is shannon or
+  more commonly as "bits".
+
+REF: http://en.wikipedia.org/wiki/Entropy_%28information_theory%29
 
 Return: @values ARRAY
 
@@ -591,7 +600,7 @@ sub ce
       next unless ( $elm{$b} > 0 );
       my $r = 0;
       $r = $elm{$b} / $tot if ( $tot > 1 );
-      $ce -= $r * log_k( $k, $r );
+      $ce -= $r * log_k( 2, $r );
     }
     push @values, $ce;
   }
@@ -600,9 +609,12 @@ sub ce
 
 =head3 cm
 
-Function to calculate the Complexity in Markov model values.
+Function to calculate the Complexity of Markov model values.
 
 Call: cm( \$seq, \$win, \$word ) STRING, NUMBER, NUMBER
+
+Y.L. Orlov, and V.N. Potapov, "Complexity: an internet resource for analysis of DNA
+sequence complexity", 1994 NAR
 
 Return: @values ARRAY
 
@@ -638,6 +650,8 @@ sub cm
 Function to calculate the Complexity Linguistic values.
 
 Call: cl( \$seq, \$win, \$word ) STRING, NUMBER, NUMBER
+
+REF: http://en.wikipedia.org/wiki/Linguistic_sequence_complexity
 
 Return: @values ARRAY
 

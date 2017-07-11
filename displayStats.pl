@@ -1,8 +1,36 @@
 #!/usr/bin/perl -w
 use strict;
+use FindBin;
+use lib $FindBin::Bin;
 use SeqComplex;
 use Getopt::Long;
 use Data::Dumper;
+
+my %methodMetaData = (
+  "at"  => { "title" => "Percent AT",
+             "x_units" => "AT%" },
+  "gc"  => { "title" => "Percent GC",
+             "x_units" => "GC%" },
+  "ats" => { "title" => "AT Skew",
+             "x_units" => "(A-T)/(A+T)" },
+  "gcs" => { "title" => "GC Skew",
+             "x_units" => "(G-C)/(G+C)" },
+  "ce" =>  { "title" => "Shannon Entropy",
+             "x_units" => "bits" },
+  "cm" =>  { "title" => "Markov Model Complexity",
+             "x_units" => "entropy" },
+  "cl" =>  { "title" => "Linguisitic Complexity",
+             "x_units" => "word fraction" },
+  "ct" =>  { "title" => "Trifonov Complexity",
+             "x_units" => "word fraction" },
+  "cz" =>  { "title" => "Compression Factor ( gzip )",
+             "x_units" => "compression factor" },
+  "cwf" =>  { "title" => "Wootton and Federhen Complexity",
+             "x_units" => "complexity" },
+  "cpg" => { "title" => "Percent CpGs",
+             "x_units" => "CpG%" } );
+           
+  
 
 =head1 NAME 
 
@@ -21,13 +49,12 @@ my $graphBins = 100;
 my $seq       = "";
 my $datafile  = "";
 
-
 usage()
     if (
          !GetOptions(
-                      'help|h'     => \$help,
-                      'in=s'       => \$datafile,
-                      'graph|g'    => \$graph
+                      'help|h'  => \$help,
+                      'in=s'    => \$datafile,
+                      'graph|g' => \$graph
          )
     );
 
@@ -37,13 +64,13 @@ usage() if ( $datafile eq "" );
 # MAIN
 my %hdrData = runAllMethodsInline( "ACGTACGT" );
 my @methods = sort keys( %hdrData );
-my $data = serializeIN( $datafile );
-my %rawData = %{ $data };
+my $data    = serializeIN( $datafile );
+my %rawData = %{$data};
 
 if ( defined $graph )
 {
+
   # Autobin each data column
-  #print "Autobinning\n";
   my %methodRanges = ();
   foreach my $method ( keys( %rawData ) )
   {
@@ -53,13 +80,13 @@ if ( defined $graph )
     {
       foreach my $value ( @{ $rawData{$method}->{$file} } )
       {
-        if ( $methodRanges{$method}->{'min'} == -1 || 
-             $value < $methodRanges{$method}->{'min'} )
+        if (    $methodRanges{$method}->{'min'} == -1
+             || $value < $methodRanges{$method}->{'min'} )
         {
           $methodRanges{$method}->{'min'} = $value;
         }
-        if ( $methodRanges{$method}->{'max'} == -1 || 
-             $value > $methodRanges{$method}->{'max'} )
+        if (    $methodRanges{$method}->{'max'} == -1
+             || $value > $methodRanges{$method}->{'max'} )
         {
           $methodRanges{$method}->{'max'} = $value;
         }
@@ -77,41 +104,47 @@ if ( defined $graph )
     if ( $binSize == 0 )
     {
       $binSize = $methodRanges{$method}->{'min'} / $graphBins;
-      $methodRanges{$method}->{'min'} = $methodRanges{$method}->{'min'} - ( $graphBins * $binSize );
+      $methodRanges{$method}->{'min'} =
+          $methodRanges{$method}->{'min'} - ( $graphBins * $binSize );
     }
     $binSizes{$method} = $binSize;
-    #print "Method $method: range: $methodRanges{$method}->{'min'} - $methodRanges{$method}->{'max'}  binSize: $binSize\n";
     foreach my $file ( keys( %{ $rawData{$method} } ) )
     {
-    foreach my $value ( @{ $rawData{$method}->{$file} } )
-    {
-      #print "  - value = $value";
-      $value -= $methodRanges{$method}->{'min'};
-      my $bin = 0;
-      if ( $binSize != 0 )
+      foreach my $value ( @{ $rawData{$method}->{$file} } )
       {
-        $bin = sprintf( "%0.0f", $value / $binSize );
+        $value -= $methodRanges{$method}->{'min'};
+        my $bin = 0;
+        if ( $binSize != 0 )
+        {
+          $bin = sprintf( "%0.0f", $value / $binSize );
+        }
+        $graphBinData{$method}->{$file}->[ $bin ]++;
       }
-      #print " bin = $bin\n";
-      $graphBinData{$method}->{$file}->[ $bin ]++;
-    }
     }
   }
 
   print "<HTML>\n";
   print "<HEAD>\n";
-  print " <SCRIPT type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\n";
+  print "<SCRIPT type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></SCRIPT>\n";
   print "  <SCRIPT type=\"text/javascript\">\n";
-  print "      google.load('visualization', '1.1', {packages: ['line']});\n";
-  print "      google.setOnLoadCallback(drawChart);\n";
+
+  print "    google.charts.load('current', {packages: ['corechart', 'line']});\n";
+  print "    google.charts.setOnLoadCallback(drawChart);\n";
   print "    function drawChart() {\n";
 
   foreach my $method ( keys( %graphBinData ) )
   {
     my $binSize = $binSizes{$method};
-
+    my $methodPrefix = $method;
+    my $wordSize = 0;
+    if ( $methodPrefix =~ /^([a-zA-Z]+)(\d*)$/ )
+    {
+      $methodPrefix = $1;
+      $wordSize = $2 if ( $2 ne "" );
+    }
+ 
     print "      var data_$method = new google.visualization.DataTable();\n";
-    print "      data_$method.addColumn('number','bin_value');\n";
+    print "      data_$method.addColumn('number','" . $methodMetaData{$methodPrefix}->{'x_units'}  . "');\n";
     foreach my $file ( sort keys( %{ $graphBinData{$method} } ) )
     {
       print "      data_$method.addColumn('number',\'$file\');\n";
@@ -121,6 +154,10 @@ if ( defined $graph )
     if ( $binSize == 0 )
     {
       my $str = "[$bin, ";
+      if ( $methodPrefix =~ /at|gc|cpg/ )
+      {
+        $str = "[" . ( $bin * 100 ) . ", ";
+      }
       foreach my $file ( sort keys( %{ $graphBinData{$method} } ) )
       {
         $str .= $graphBinData{$method}->{$file}->[ 0 ] . ",";
@@ -131,12 +168,18 @@ if ( defined $graph )
     } else
     {
       my $str = "";
-      for ( my $i = 0; $i <= $graphBins; $i++ )
+      for ( my $i = 0 ; $i <= $graphBins ; $i++ )
       {
-        $str .= "[$bin, ";
+        if ( $methodPrefix =~ /at|gc|cpg/ )
+        {
+          $str .= "[" . ( $bin * 100 ) . ", ";
+        }else
+        {
+          $str .= "[$bin, ";
+        }
         foreach my $file ( sort keys( %{ $graphBinData{$method} } ) )
         {
-          my $value = $graphBinData{$method}->{$file}->[$i];
+          my $value = $graphBinData{$method}->{$file}->[ $i ];
           $value = 0 if ( !defined $value );
           $str .= "$value,";
         }
@@ -148,13 +191,23 @@ if ( defined $graph )
       print "$str ] );\n";
     }
     print "var options_$method = {\n";
+
     print "               chart: {\n";
-    print "                 title: 'Method = $method'\n";
+    print  "                 title: '" . $methodMetaData{$methodPrefix}->{'title'};
+    if ( $wordSize > 0 ) 
+    {
+      print " ( word size = $wordSize )";
+    }
+    print "'\n";
     print "                      },\n";
-    print "                   width: 900,\n";
-    print "                   height: 500 };\n";
-    print
-"var chart_$method = new google.charts.Line(document.getElementById('chart_$method'));\n";
+
+    print "                 width: 900,\n";
+    print "                 height: 500,\n";
+    print "                 series: { 0: {axis: 'bins'} },\n";
+    print "                 axes: { y: { bins: {label: '1k bins, 500bp overlap'} } }\n";
+    print "};\n";
+
+    print "var chart_$method = new google.charts.Line(document.getElementById('chart_$method'));\n";
     print "chart_$method.draw(data_$method, options_$method);\n";
   }
   print "}\n";
@@ -190,7 +243,8 @@ sub usage
 ##      from a serialized PERL object or data structure.
 ##
 ##-------------------------------------------------------------------------##
-sub serializeIN {
+sub serializeIN
+{
   my $fileName     = shift;
   my $fileContents = "";
   my $oldSep       = $/;
@@ -215,7 +269,8 @@ sub serializeIN {
 ##      read back into an object of this type.
 ##
 ##-------------------------------------------------------------------------##
-sub serializeOUT {
+sub serializeOUT
+{
   my $object      = shift;
   my $fileName    = shift;
   my $data_dumper = new Data::Dumper( [ $object ] );
@@ -225,15 +280,15 @@ sub serializeOUT {
   close OUT;
 }
 
-
 =head1 AUTHOR
 
+Robert Hubley
 Juan Caballero
-Institute for Systems Biology @ 2010
+Institute for Systems Biology @ 2010-2015
 
 =head1 CONTACT
 
-jcaballero@systemsbiology.org
+rhubley@systemsbiology.org
 
 =head1 LICENSE
 

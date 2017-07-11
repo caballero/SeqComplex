@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
+use FindBin;
+use lib $FindBin::Bin;
 use SeqComplex;
 use Getopt::Long;
 use Data::Dumper;
