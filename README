@@ -22,11 +22,14 @@ Computed methods
   *ctN: Trifnov's complexity with order N 
   *clN: Linguistic complexity with order N
 
-Additonal methods
+Additional methods
   *ats: A+T skew
   *ket: Keto skew
   *pur: Purine skew
 
+
+Citation
+  * Caballero J, Smit AFA, Hood L, Glusman G, Realistic artificial DNA sequences as negative controls for computational genomics, Nucleic Acids Research, 2014. https://doi.org/10.1093/nar/gku356
 
 Copyright (C) 2009-2015 by Juan Caballero [jcaballero@systemsbiology.org]
 
