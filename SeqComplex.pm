@@ -102,8 +102,12 @@ sub runAllMethods
   $gwin ||= length $gseq;    # Use full length of the sequence
   my $gword  = shift @_;
   my @gwords = ();
-  if ( defined $gword ) { push @gwords, $gword; }
-  else { @gwords = ( 1, 2, 3, 4, 5, 6 ); }
+  if ( defined $gword ) { 
+    push @gwords, $gword;
+  }
+  else { 
+    @gwords = ( 1, 2, 3, 4, 5, 6 ); 
+  }
 
   my %gvalues = ();
   @{ $gvalues{'gc'} }  = gc( \$gseq,  \$gwin );
@@ -198,27 +202,52 @@ sub runAllMethodsInline
     my $totNuc = $elm{'C'} + $elm{'G'} + $elm{'T'} + $elm{'A'};
 
     # GC
-    $val = ( $elm{'C'} + $elm{'G'} ) / $totNuc if ( $totNuc > 1 );
+    if ( $totNuc > 1 ) {
+      $val = ( $elm{'C'} + $elm{'G'} ) / $totNuc;
+    }
+    else {
+      $val = "-";
+    }
     push @{ $gvalues{'gc'} }, $val;
 
     # AT
-    $val = ( $elm{'A'} + $elm{'T'} ) / $totNuc if ( $totNuc > 1 );
+    if ( $totNuc > 1 ) {
+      $val = ( $elm{'A'} + $elm{'T'} ) / $totNuc;
+    }
+    else {
+      $val = "-";
+    }
     push @{ $gvalues{'at'} }, $val;
 
     # GCS
     $cnt1 = $elm{'G'} + $elm{'C'};
-    $val = abs( $elm{'G'} - $elm{'C'} ) / $cnt1 if ( $cnt1 > 1 );
+    if ( $cnt1 > 1 ) {
+      $val = abs( $elm{'G'} - $elm{'C'} ) / $cnt1;
+    }
+    else {
+      $val = "-";
+    }
     push @{ $gvalues{'gcs'} }, $val;
 
     # ATS
     $cnt1 = $elm{'A'} + $elm{'T'};
-    $val = abs( $elm{'A'} - $elm{'T'} ) / $cnt1 if ( $cnt1 > 1 );
+    if ( $cnt1 > 1 ) {
+      $val = abs( $elm{'A'} - $elm{'T'} ) / $cnt1;
+    }
+    else {
+      $val = "-";
+    }  
     push @{ $gvalues{'ats'} }, $val;
 
     # CPG
     $cnt1 = ($str =~ s/CG/CG/g);
     $cnt2 = $elm{'G'} * $elm{'C'};
-    $val  = $cnt1 / $cnt2 if ( $cnt2 > 1 );
+    if ( $cnt2 > 1 ) {
+      $val  = $cnt1 / $cnt2;
+    }
+    else {
+      $val = "-";
+    }    
     push @{ $gvalues{'cpg'} }, $val;
 
     # CWF
@@ -228,7 +257,12 @@ sub runAllMethodsInline
       next unless ( $elm{$b} > 0 );
       $dw += log_k( $k, $elm{$b} );
     }
-    $val = ( $up - $dw ) / $totNuc if ( $totNuc > 1 );
+    if ( $totNuc > 1 ) {
+      $val = ( $up - $dw ) / $totNuc;
+    }
+    else {
+      $val = "-";
+    }
     push @{ $gvalues{'cwf'} }, $val;
 
     # CE
@@ -236,7 +270,10 @@ sub runAllMethodsInline
     foreach my $b ( keys %elm )
     {
       next unless ( $elm{$b} > 0 );
-      my $r = $elm{$b} / $totNuc if ( $totNuc > 1 );
+      my $r = 0;
+      if ( $totNuc > 1 ) {
+        $r = $elm{$b} / $totNuc;
+      }
       $val -= $r * log_k( 2, $r );
     }
     push @{ $gvalues{"ce"} }, $val;
@@ -276,7 +313,12 @@ sub runAllMethodsInline
         $sum_vl += $vl;
       }
       my $r = 0;
-      $r = $sum_vl / $sum_vm if ( $sum_vm > 0 );
+      if ( $sum_vm > 0 ) {
+        $r = $sum_vl / $sum_vm ;
+      }
+      else {
+        $r = "-";
+      }
       push @{ $gvalues{"cl$ws"} }, $r;
     }
 
@@ -345,7 +387,7 @@ sub gc
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $r   = 0;
+    my $r   = '-';
     my $tot = $elm{'C'} + $elm{'G'} + $elm{'T'} + $elm{'A'};
     $r = ( $elm{'C'} + $elm{'G'} ) / $tot if ( $tot > 1 );
     push @values, $r;
@@ -373,7 +415,7 @@ sub at
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $r   = 0;
+    my $r   = '-';
     my $tot = $elm{'C'} + $elm{'G'} + $elm{'T'} + $elm{'A'};
     $r = ( $elm{'A'} + $elm{'T'} ) / $tot if ( $tot > 1 );
     push @values, $r;
@@ -402,7 +444,7 @@ sub gcs
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
     my $l   = $elm{'G'} + $elm{'C'};
-    my $r   = 0;
+    my $r   = '-';
     $r = abs( $elm{'G'} - $elm{'C'} ) / $l if ( $l > 1 );
     push @values, $r;
   }
@@ -431,7 +473,7 @@ sub cpg
     my %elm = countWords( $str, 1 );
     my $c = ($str =~ s/CG/CG/g);
     my $l = $elm{'G'} * $elm{'C'};
-    my $r = 0;
+    my $r = '-';
     $r = $c / $l if ( $l > 1 );
     push @values, $r;
   }
@@ -459,7 +501,7 @@ sub ats
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
     my $l   = $elm{'A'} + $elm{'T'};
-    my $r   = 0;
+    my $r   = '-';
     $r = abs( $elm{'A'} - $elm{'T'} ) / $l if ( $l > 1 );
     push @values, $r;
   }
@@ -488,7 +530,7 @@ sub ket
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $r   = 0;
+    my $r   = '-';
     my $tot = $elm{'G'} + $elm{'T'} + $elm{'A'} + $elm{'C'};
     $r = abs( $elm{'G'} + $elm{'T'} - $elm{'A'} - $elm{'C'} ) / $tot
         if ( $tot > 1 );
@@ -517,7 +559,7 @@ sub pur
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $r   = 0;
+    my $r   = '-';
     my $tot = $elm{'G'} + $elm{'T'} + $elm{'A'} + $elm{'C'};
     $r = abs( $elm{'G'} - $elm{'T'} + $elm{'A'} - $elm{'C'} ) / $tot
         if ( $tot > 1 );
@@ -548,7 +590,7 @@ sub cwf
   {
     my $str = substr( $$seq, $p, $$win );
     my %elm = countWords( $str, 1 );
-    my $r   = 0;
+    my $r   = '-';
     my $dw  = 0;
     my $tot = $elm{'G'} + $elm{'T'} + $elm{'A'} + $elm{'C'};
 
@@ -685,7 +727,7 @@ sub cl
       }
       $sum_vl += $vl;
     }
-    my $r = 0;
+    my $r = '-';
     $r = $sum_vl / $sum_vm if ( $sum_vm > 0 );
     push @values, $r;
   }
